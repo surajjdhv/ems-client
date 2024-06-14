@@ -3,16 +3,38 @@ import DefaultAuthCard from '@/components/Auths/DefaultAuthCard.vue'
 import InputGroup from '@/components/Auths/InputGroup.vue'
 import LoginLayout from '@/layouts/LoginLayout.vue'
 
+import axios from 'axios'
+
 import { ref } from 'vue'
 
-const pageTitle = ref('Log In')
+const userCredentials = ref({
+  email: '',
+  password: ''
+})
+
+const submitForm = async () => {
+  try {
+    const response = await axios.post('https://api.ems.local/api/user/login', {
+      email: userCredentials.value.email,
+      password: userCredentials.value.password
+    })
+    console.log(response.data)
+  } catch (error) {
+    console.error('Error submitting form:', error)
+  }
+}
 </script>
 
 <template>
   <LoginLayout>
     <DefaultAuthCard title="Log In to TailAdmin">
-      <form>
-        <InputGroup label="Email" type="email" placeholder="Enter your email">
+      <form @submit.prevent="submitForm">
+        <InputGroup
+          label="Email"
+          type="email"
+          v-model="userCredentials.email"
+          placeholder="Enter your email"
+        >
           <svg
             class="fill-current"
             width="22"
@@ -30,7 +52,12 @@ const pageTitle = ref('Log In')
           </svg>
         </InputGroup>
 
-        <InputGroup label="Password" type="password" placeholder="6+ Characters, 1 Capital letter">
+        <InputGroup
+          label="Password"
+          type="password"
+          v-model="userCredentials.password"
+          placeholder="6+ Characters, 1 Capital letter"
+        >
           <svg
             class="fill-current"
             width="22"
