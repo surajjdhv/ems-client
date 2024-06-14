@@ -1,6 +1,6 @@
 import './assets/css/satoshi.css'
 import './assets/css/style.css'
-import 'jsvectormap/dist/css/jsvectormap.min.css'
+import 'jsvectormap/dist/jsvectormap.min.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
