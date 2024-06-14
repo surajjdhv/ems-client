@@ -6,7 +6,10 @@ import LoginLayout from '@/layouts/LoginLayout.vue'
 import axios from 'axios'
 
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
+const router = useRouter()
 const userCredentials = ref({
   email: '',
   password: ''
@@ -18,7 +21,12 @@ const submitForm = async () => {
       email: userCredentials.value.email,
       password: userCredentials.value.password
     })
-    console.log(response.data)
+    if (response.data.status === 'success') {
+      // console.log(response.data)
+      const authStore = useAuthStore()
+      authStore.login({ user: userCredentials.value.email, token: response.data.access_token })
+      router.replace('/')
+    }
   } catch (error) {
     console.error('Error submitting form:', error)
   }
