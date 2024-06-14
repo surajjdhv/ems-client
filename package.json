@@ -13,9 +13,15 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@vueuse/core": "^10.7.1",
+    "apexcharts": "^3.45.1",
+    "axios": "^1.7.2",
+    "flatpickr": "^4.6.13",
+    "jsvectormap": "^1.5.3",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vue3-apexcharts": "^1.4.4"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
