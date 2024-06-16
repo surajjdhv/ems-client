@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const target = ref(null)
 const dropdownOpen = ref(false)
+
+const router = useRouter()
+
+const logout = () => {
+  const authStore = useAuthStore()
+  authStore.logout()
+  router.replace('/login')
+}
 
 onClickOutside(target, () => {
   dropdownOpen.value = false
@@ -103,6 +113,7 @@ onClickOutside(target, () => {
       </ul>
       <button
         class="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
+        @click="logout"
       >
         <svg
           class="fill-current"
