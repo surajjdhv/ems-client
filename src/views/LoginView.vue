@@ -5,6 +5,8 @@ import LoginLayout from '@/layouts/LoginLayout.vue'
 
 import axios from 'axios'
 
+axios.defaults.withCredentials = true
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
