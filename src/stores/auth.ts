@@ -4,6 +4,7 @@ import { useCookies } from '@vueuse/integrations/useCookies'
 import { useRouter } from 'vue-router'
 
 import axios from 'axios'
+axios.defaults.withCredentials = true
 
 const API_URL = `${import.meta.env.VITE_API_URL}`
 
@@ -22,7 +23,18 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (loginResponse.data.status === 'success') {
         token.value = loginResponse.data.access_token
+
         cookies.set('accessToken', token.value)
+
+        axios.defaults.headers.post['Authorization'] = `Bearer ${token.value}`
+
+        try {
+          const userDetailsResponse = await axios.post(`${API_URL}/user/me`)
+          console.log(`Welcome, ${userDetailsResponse.data.name}`)
+        } catch (error) {
+          console.error('Error fetching user details', error)
+        }
+
         router.replace('/')
       }
     } catch (error) {
