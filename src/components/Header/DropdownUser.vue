@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const target = ref(null)
 const dropdownOpen = ref(false)
 
-const router = useRouter()
-
-const logout = () => {
+const logout = async () => {
   const authStore = useAuthStore()
-  authStore.logout()
-  router.replace('/login')
+  await authStore.logout()
 }
 
 onClickOutside(target, () => {
