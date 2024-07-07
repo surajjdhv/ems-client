@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import DefaultAuthCard from '@/components/Auths/DefaultAuthCard.vue'
 import InputGroup from '@/components/Auths/InputGroup.vue'
 import LoginLayout from '@/layouts/LoginLayout.vue'
@@ -23,6 +23,11 @@ const submitForm = async () => {
 <template>
   <LoginLayout>
     <DefaultAuthCard title="Log In to TailAdmin">
+      <div class="my-4.5">
+        <span v-if="authStore.authErrorMessage" class="text-base text-red my-4.5">
+          {{ authStore.authErrorMessage }}
+        </span>
+      </div>
       <form @submit.prevent="submitForm">
         <InputGroup
           label="Email"

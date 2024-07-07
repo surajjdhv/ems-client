@@ -5,10 +5,12 @@ import { useRouter } from 'vue-router'
 
 import axios from 'axios'
 axios.defaults.withCredentials = true
+axios.defaults.withXSRFToken = true
 
 const API_URL = `${import.meta.env.VITE_API_URL}`
 
 export const useAuthStore = defineStore('auth', () => {
+  const authErrorMessage = ref<string | null>(null)
   const token = ref<string | null>(null)
 
   const cookies = useCookies(['accessToken'])
@@ -16,29 +18,41 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function login(userCredentials: userCredentials) {
     try {
-      const loginResponse = await axios.post(`${API_URL}/user/login`, {
-        email: userCredentials.user,
-        password: userCredentials.password
-      })
+      await axios.get(`${API_URL}/sanctum/csrf-cookie`)
+      if (cookies.get('XSRF-TOKEN')) {
+        const { data: loginResponse } = await axios.post(`${API_URL}/user/login`, {
+          email: userCredentials.user,
+          password: userCredentials.password
+        })
 
-      if (loginResponse.data.status === 'success') {
-        token.value = loginResponse.data.access_token
+        if (loginResponse.data.access_token) {
+          authErrorMessage.value = ''
 
-        cookies.set('accessToken', token.value)
+          token.value = loginResponse.data.access_token
 
-        axios.defaults.headers.post['Authorization'] = `Bearer ${token.value}`
+          cookies.set('accessToken', token.value)
 
-        try {
-          const userDetailsResponse = await axios.post(`${API_URL}/user/me`)
-          console.log(`Welcome, ${userDetailsResponse.data.name}`)
-        } catch (error) {
-          console.error('Error fetching user details', error)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+
+          await fetchUserDetails()
+
+          router.replace('/')
         }
-
-        router.replace('/')
+      } else {
+        console.error('Unable to set csrf-cookie')
+        authErrorMessage.value = 'Unable to sign in'
       }
+    } catch (error: any) {
+      authErrorMessage.value = error.response.data.message
+    }
+  }
+
+  async function fetchUserDetails() {
+    try {
+      const { data: userDetailsResponse } = await axios.get(`${API_URL}/user/me`)
+      console.log(`Welcome, ${userDetailsResponse.data.name}`)
     } catch (error) {
-      console.error('Error submitting form:', error)
+      console.error('Unable to fetch user details', error)
     }
   }
 
@@ -50,7 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!token.value || !!cookies.get('accessToken'))
 
-  return { token, login, logout, isAuthenticated }
+  return { login, logout, token, authErrorMessage, isAuthenticated }
 })
 
 interface userCredentials {
