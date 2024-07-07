@@ -3,20 +3,35 @@ import DefaultAuthCard from '@/components/Auths/DefaultAuthCard.vue'
 import InputGroup from '@/components/Auths/InputGroup.vue'
 import LoginLayout from '@/layouts/LoginLayout.vue'
 
-import { ref } from 'vue'
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/yup'
+import { object, string } from 'yup'
 import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
-const userCredentials = ref({
-  email: '',
-  password: ''
+const { defineField, values, errors } = useForm({
+  validationSchema: toTypedSchema(
+    object({
+      email: string()
+        .email({ errorMessage: 'Enter a valid email address' })
+        .required({ errorMessage: 'Email address is required' }),
+      password: string()
+        .min(6, { errorMessage: 'Password be at least 6 characters long' })
+        .required({ errorMessage: 'Password is required' })
+    })
+  )
 })
 
+const [email, emailAttrs] = defineField('email')
+const [password, passwordAttrs] = defineField('password')
+
 const submitForm = async () => {
-  const authStore = useAuthStore()
-  await authStore.login({
-    user: userCredentials.value.email,
-    password: userCredentials.value.password
-  })
+  if (!errors.value) {
+    await authStore.login({
+      user: values.email,
+      password: values.password
+    })
+  }
 }
 </script>
 
@@ -32,8 +47,9 @@ const submitForm = async () => {
         <InputGroup
           label="Email"
           type="email"
-          v-model="userCredentials.email"
-          placeholder="Enter your email"
+          v-model="email"
+          v-bind="emailAttrs"
+          placeholder="Email Address"
         >
           <svg
             class="fill-current"
@@ -50,13 +66,19 @@ const submitForm = async () => {
               />
             </g>
           </svg>
+          <template v-slot:error>
+            <div v-if="!!errors.email" class="text-sm leading-tight">
+              <span>{{ errors.email.errorMessage }}</span>
+            </div>
+          </template>
         </InputGroup>
 
         <InputGroup
           label="Password"
           type="password"
-          v-model="userCredentials.password"
-          placeholder="6+ Characters, 1 Capital letter"
+          v-model="password"
+          v-bind="passwordAttrs"
+          placeholder="Your Password"
         >
           <svg
             class="fill-current"
@@ -77,9 +99,14 @@ const submitForm = async () => {
               />
             </g>
           </svg>
+          <template v-slot:error>
+            <p v-if="!!errors.password" class="text-sm leading-tight">
+              {{ errors.password.errorMessage }}
+            </p>
+          </template>
         </InputGroup>
 
-        <div class="mb-5 mt-6">
+        <div class="mt-15">
           <input
             type="submit"
             value="Log In"
