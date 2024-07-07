@@ -7,7 +7,7 @@ import axios from 'axios'
 axios.defaults.withCredentials = true
 axios.defaults.withXSRFToken = true
 
-const API_URL = `${import.meta.env.VITE_API_URL}`
+const API_URL = import.meta.env.PROD ? `${import.meta.env.VITE_API_URL}` : `/api`
 
 export const useAuthStore = defineStore('auth', () => {
   const authErrorMessage = ref<string | null>(null)
