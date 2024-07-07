@@ -5,7 +5,7 @@ const props = defineProps(['subtitle', 'title', 'customClasses'])
 <template>
   <!-- ====== Forms Section Start -->
   <div class="min-h-screen flex flex-wrap items-center bg-white dark:bg-boxdark">
-    <div class="hidden w-full md:block md:w-1/2">
+    <div class="hidden w-full border-stroke dark:border-strokedark md:border-r-2 md:block md:w-1/2">
       <div class="md:p-12.5 xl:p-17.5 text-center">
         <router-link class="mb-5.5 inline-block" to="/">
           <img class="hidden dark:block" src="@/assets/images/logo/logo.svg" alt="Logo" />
@@ -21,10 +21,10 @@ const props = defineProps(['subtitle', 'title', 'customClasses'])
         </span>
       </div>
     </div>
-    <div class="w-full border-stroke dark:border-strokedark md:w-1/2 md:border-l-2">
-      <div class="w-full p-4 sm:p-12.5 xl:p-17.5">
+    <div class="w-full md:w-1/2">
+      <div class="w-full px-4 sm:px-12.5 xl:px-17.5">
         <span class="mb-1.5 block font-medium">{{ props.subtitle }}</span>
-        <h2 class="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+        <h2 class="text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
           {{ props.title }}
         </h2>
 
